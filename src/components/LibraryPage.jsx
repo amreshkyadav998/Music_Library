@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { SongItem } from './SongItem'; // Named import
+import { SongItem } from './SongItem';
 
-const LibraryPage = ({ songs, dispatch, role }) => {
+const LibraryPage = ({ songs = [], dispatch, role, setCurrentSong, isPlaying, onPlayPause, currentSong }) => {
   const [filter, setFilter] = useState('');
   const [sortBy, setSortBy] = useState('title');
   const [groupBy, setGroupBy] = useState('none');
@@ -76,7 +76,16 @@ const LibraryPage = ({ songs, dispatch, role }) => {
               </h3>
               <div className="space-y-3">
                 {groupSongs.map((song) => (
-                  <SongItem key={song.id} song={song} role={role} dispatch={dispatch} isCompact />
+                  <SongItem 
+                    key={song.id} 
+                    song={song} 
+                    role={role} 
+                    dispatch={dispatch} 
+                    isCompact 
+                    setCurrentSong={setCurrentSong} 
+                    isPlaying={isPlaying && currentSong?.id === song.id} 
+                    onPlayPause={onPlayPause} 
+                  />
                 ))}
               </div>
             </div>

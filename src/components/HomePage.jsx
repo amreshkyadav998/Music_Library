@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Search } from "lucide-react";
-import { SongItem } from './SongItem'; // Named import
+import { SongItem } from './SongItem';
 
-const HomePage = ({ songs, dispatch, role }) => {
+const HomePage = ({ songs = [], dispatch, role, setCurrentSong, isPlaying, onPlayPause, currentSong }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredSongs = songs.filter(song =>
@@ -18,10 +18,10 @@ const HomePage = ({ songs, dispatch, role }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
+          <h1 className="text-2xl md:text-2xl font-bold text-gray-800">
             {getGreeting()}
           </h1>
           <p className="text-gray-600 mt-1">Ready to discover some music?</p>
@@ -44,7 +44,7 @@ const HomePage = ({ songs, dispatch, role }) => {
           </div>
           <h3 className="text-xl font-semibold text-gray-800 mb-2">No songs yet</h3>
           <p className="text-gray-600 mb-6">
-            Add your first song using the sidebar to get started!
+            {role === 'admin' ? 'Add your first song using the sidebar to get started!' : 'No songs available yet.'}
           </p>
         </div>
       ) : (
@@ -54,7 +54,15 @@ const HomePage = ({ songs, dispatch, role }) => {
           </h2>
           <div className="space-y-3">
             {filteredSongs.map((song) => (
-              <SongItem key={song.id} song={song} role={role} dispatch={dispatch} />
+              <SongItem 
+                key={song.id} 
+                song={song} 
+                role={role} 
+                dispatch={dispatch} 
+                setCurrentSong={setCurrentSong} 
+                isPlaying={isPlaying && currentSong?.id === song.id} 
+                onPlayPause={onPlayPause} 
+              />
             ))}
           </div>
         </div>
