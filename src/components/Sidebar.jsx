@@ -1,59 +1,10 @@
-// // import SongList from './components/SongList';
-// // import AddSongForm from './components/AddSongForm';
-// // import { SongsProvider } from './contexts/SongsContext';
-
-// // const MusicLibrary = ({ role }) => {
-// //   return (
-// //     <SongsProvider>
-// //       <div className="text-gray-900 dark:text-white">
-// //         {role === 'admin' && <AddSongForm />}
-// //         <SongList role={role} />
-// //       </div>
-// //     </SongsProvider>
-// //   );
-// // };
-
-// // export default MusicLibrary;
-
-// import SongList from './components/SongList';
-// import AddSongForm from './components/AddSongForm';
-
-// const MusicLibrary = ({ role, songs, dispatch }) => {
-//   return (
-//     <div className="text-gray-900 dark:text-white">
-//       {role === 'admin' && <AddSongForm dispatch={dispatch} />}
-//       <SongList role={role} songs={songs} dispatch={dispatch} />
-//     </div>
-//   );
-// };
-
-// export default MusicLibrary;
-
-
-// import SongList from './components/SongList';
-// import AddSongForm from './components/AddSongForm';
-
-// const MusicLibrary = ({ role, songs, dispatch }) => {
-//   return (
-//     <div className="text-gray-900 dark:text-white">
-//       {role === 'admin' && <AddSongForm dispatch={dispatch} />}
-//       <SongList role={role} songs={songs} dispatch={dispatch} />
-//     </div>
-//   );
-// };
-
-// export default MusicLibrary;
-
-
-import { useState } from 'react';
-import { Plus, Home, Music, Heart, Settings } from 'lucide-react';
-import AddSongForm from './components/AddSongForm';
-import HomePage from './components/HomePage';
-import LibraryPage from './components/LibraryPage';
-import { SongItem } from './components/SongItem'; // Named import for SongItem only
-
-const MusicLibrary = ({ songs, dispatch, role }) => {
+import { useState, useReducer } from 'react';
+import {Plus , Home , Music , Heart , Settings} from 'lucide-react';
+import { songReducer, initialSongs } from './SongItem'; 
+const Sidebar = () => {
+  const [songs, dispatch] = useReducer(songReducer, initialSongs);
   const [activeTab, setActiveTab] = useState('home');
+  const [role] = useState('admin'); // You can change this to 'user' to test different roles
 
   const sidebarItems = [
     { id: 'home', label: 'Home', icon: Home },
@@ -93,7 +44,9 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
 
   return (
     <div className="flex h-screen bg-gray-50">
+      {/* Sidebar */}
       <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+        {/* Header */}
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
@@ -102,6 +55,8 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
             <h1 className="text-xl font-bold text-gray-800">Music Library</h1>
           </div>
         </div>
+
+        {/* Navigation */}
         <div className="flex-1 p-4">
           <div className="space-y-2">
             {sidebarItems.map((item) => {
@@ -122,6 +77,8 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
               );
             })}
           </div>
+
+          {/* Add Song Button */}
           {role === 'admin' && (
             <button
               onClick={() => setActiveTab('add-song')}
@@ -137,6 +94,8 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
           )}
         </div>
       </div>
+
+      {/* Main Content */}
       <div className="flex-1 overflow-auto">
         <div className="p-6 md:p-8">
           {renderContent()}
@@ -146,4 +105,4 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
   );
 };
 
-export default MusicLibrary;
+export default Sidebar;

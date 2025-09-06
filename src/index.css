@@ -1,1 +1,28 @@
 @import "tailwindcss";
+
+
+@theme {
+  --color-bg: #ffffff; /* Light background */
+  --color-text: #0f172a; /* Dark text */
+  --color-accent: #3b82f6; /* Blue accent */
+}
+
+/* Override for dark mode */
+.dark {
+  --color-bg: #0f172a; /* Dark background */
+  --color-text: #f1f5f9; /* Light text */
+  --color-accent: #60a5fa; /* Lighter blue accent */
+}
+
+/* Apply theme variables */
+.bg-custom {
+  background-color: var(--color-bg);
+}
+
+.text-custom {
+  color: var(--color-text);
+}
+
+.accent-custom {
+  color: var(--color-accent);
+}

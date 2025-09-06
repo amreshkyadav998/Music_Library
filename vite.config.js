@@ -13,6 +13,7 @@ export default defineConfig({
       filename: "remoteEntry.js",
       exposes: {
         "./MusicLibrary": "./src/MusicLibrary.jsx",
+        "./Sidebar": "./src/components/Sidebar.jsx",
       },
       shared: ["react", "react-dom", "react-router-dom", "lucide-react"],
     }),
