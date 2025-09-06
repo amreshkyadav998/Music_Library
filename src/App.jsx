@@ -10,3 +10,5 @@ function App() {
 }
 
 export default App
+
+// "build": "concurrently \"vite build --watch\" \"vite preview --port 4174 --strictPort\""
