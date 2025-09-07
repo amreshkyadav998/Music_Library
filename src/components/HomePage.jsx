@@ -52,18 +52,20 @@ const HomePage = ({ songs = [], dispatch, role, setCurrentSong, isPlaying, onPla
           <h2 className="text-xl font-semibold text-gray-800">
             Your Music ({filteredSongs.length} song{filteredSongs.length !== 1 ? 's' : ''})
           </h2>
-          <div className="space-y-3">
-            {filteredSongs.map((song) => (
-              <SongItem 
-                key={song.id} 
-                song={song} 
-                role={role} 
-                dispatch={dispatch} 
-                setCurrentSong={setCurrentSong} 
-                isPlaying={isPlaying && currentSong?.id === song.id} 
-                onPlayPause={onPlayPause} 
-              />
-            ))}
+          <div className="max-h-[calc(100vh-300px)] overflow-y-auto pr-4">
+            <div className="space-y-3">
+              {filteredSongs.map((song) => (
+                <SongItem 
+                  key={song.id} 
+                  song={song} 
+                  role={role} 
+                  dispatch={dispatch} 
+                  setCurrentSong={setCurrentSong} 
+                  isPlaying={isPlaying && currentSong?.id === song.id} 
+                  onPlayPause={onPlayPause} 
+                />
+              ))}
+            </div>
           </div>
         </div>
       )}

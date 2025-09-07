@@ -1,13 +1,13 @@
-import { useState, useRef, useEffect } from 'react';
-import { Plus, Home, Music, Heart, Settings, Menu, X } from 'lucide-react';
-import AddSongForm from './components/AddSongForm';
-import HomePage from './components/HomePage';
-import LibraryPage from './components/LibraryPage';
-import { SongItem } from './components/SongItem';
-import BottomPlayerBar from './components/BottomPlayerBar';
+import { useState, useRef, useEffect } from "react";
+import { Plus, Home, Music, Heart, Settings, Menu, X } from "lucide-react";
+import AddSongForm from "./components/AddSongForm";
+import HomePage from "./components/HomePage";
+import LibraryPage from "./components/LibraryPage";
+import { SongItem } from "./components/SongItem";
+import BottomPlayerBar from "./components/BottomPlayerBar";
 
 const MusicLibrary = ({ songs, dispatch, role }) => {
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState("home");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentSong, setCurrentSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -17,10 +17,10 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
   const audioRef = useRef(null);
 
   const sidebarItems = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'library', label: 'Library', icon: Music },
-    { id: 'favorites', label: 'Favorites', icon: Heart },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: "home", label: "Home", icon: Home },
+    { id: "library", label: "Library", icon: Music },
+    { id: "favorites", label: "Favorites", icon: Heart },
+    { id: "settings", label: "Settings", icon: Settings },
   ];
 
   useEffect(() => {
@@ -38,35 +38,51 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
       setDuration(audio.duration);
     };
 
-    audio.addEventListener('timeupdate', updateTime);
-    audio.addEventListener('loadedmetadata', setDur);
-    audio.addEventListener('ended', () => {
+    audio.addEventListener("timeupdate", updateTime);
+    audio.addEventListener("loadedmetadata", setDur);
+    audio.addEventListener("ended", () => {
       console.log("Song ended");
       setIsPlaying(false);
     });
 
     return () => {
-      audio.removeEventListener('timeupdate', updateTime);
-      audio.removeEventListener('loadedmetadata', setDur);
-      audio.removeEventListener('ended', () => setIsPlaying(false));
+      audio.removeEventListener("timeupdate", updateTime);
+      audio.removeEventListener("loadedmetadata", setDur);
+      audio.removeEventListener("ended", () => setIsPlaying(false));
     };
   }, [currentSong]);
 
+  // Effect 1: Load new song only when currentSong changes
   useEffect(() => {
     if (!audioRef.current || !currentSong) return;
     console.log("Setting audio source to:", currentSong.url);
     audioRef.current.src = currentSong.url;
-    audioRef.current.volume = volume;
+    audioRef.current.currentTime = 0; // reset to start when new song loads
+    audioRef.current.load();
     if (isPlaying) {
       audioRef.current
         .play()
-        .then(() => console.log("Playback started"))
-        .catch(error => console.error("Playback failed:", error));
+        .catch((err) => console.error("Playback failed:", err));
+    }
+  }, [currentSong]);
+
+  // Effect 2: Play/Pause toggle
+  useEffect(() => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current
+        .play()
+        .catch((err) => console.error("Playback failed:", err));
     } else {
       audioRef.current.pause();
-      console.log("Playback paused");
     }
-  }, [currentSong, isPlaying, volume]);
+  }, [isPlaying]);
+
+  // Effect 3: Volume control (independent)
+  useEffect(() => {
+    if (!audioRef.current) return;
+    audioRef.current.volume = volume;
+  }, [volume]);
 
   const onPlayPause = () => {
     if (!audioRef.current) return;
@@ -86,7 +102,7 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
   };
 
   const onPrevious = () => {
-    const currentIndex = songs.findIndex(song => song.id === currentSong?.id);
+    const currentIndex = songs.findIndex((song) => song.id === currentSong?.id);
     if (currentIndex > 0) {
       console.log("Going to previous song, index:", currentIndex - 1);
       setCurrentSong(songs[currentIndex - 1]);
@@ -96,7 +112,7 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
   };
 
   const onNext = () => {
-    const currentIndex = songs.findIndex(song => song.id === currentSong?.id);
+    const currentIndex = songs.findIndex((song) => song.id === currentSong?.id);
     if (currentIndex < songs.length - 1) {
       console.log("Going to next song, index:", currentIndex + 1);
       setCurrentSong(songs[currentIndex + 1]);
@@ -107,30 +123,66 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'home':
-        return <HomePage songs={songs} dispatch={dispatch} role={role} setCurrentSong={setCurrentSong} isPlaying={isPlaying} onPlayPause={onPlayPause} currentSong={currentSong} />;
-      case 'library':
-        return <LibraryPage songs={songs} dispatch={dispatch} role={role} setCurrentSong={setCurrentSong} isPlaying={isPlaying} onPlayPause={onPlayPause} currentSong={currentSong} />;
-      case 'add-song':
+      case "home":
+        return (
+          <HomePage
+            songs={songs}
+            dispatch={dispatch}
+            role={role}
+            setCurrentSong={setCurrentSong}
+            isPlaying={isPlaying}
+            onPlayPause={onPlayPause}
+            currentSong={currentSong}
+          />
+        );
+      case "library":
+        return (
+          <LibraryPage
+            songs={songs}
+            dispatch={dispatch}
+            role={role}
+            setCurrentSong={setCurrentSong}
+            isPlaying={isPlaying}
+            onPlayPause={onPlayPause}
+            currentSong={currentSong}
+          />
+        );
+      case "add-song":
         return <AddSongForm dispatch={dispatch} />;
-      case 'favorites':
+      case "favorites":
         return (
           <div className="text-center py-16">
             <Heart className="mx-auto text-gray-400 mb-4" size={64} />
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Favorites</h2>
-            <p className="text-gray-600">Your favorite songs will appear here</p>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+              Favorites
+            </h2>
+            <p className="text-gray-600">
+              Your favorite songs will appear here
+            </p>
           </div>
         );
-      case 'settings':
+      case "settings":
         return (
           <div className="text-center py-16">
             <Settings className="mx-auto text-gray-400 mb-4" size={64} />
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Settings</h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+              Settings
+            </h2>
             <p className="text-gray-600">App settings and preferences</p>
           </div>
         );
       default:
-        return <HomePage songs={songs} dispatch={dispatch} role={role} setCurrentSong={setCurrentSong} isPlaying={isPlaying} onPlayPause={onPlayPause} currentSong={currentSong} />;
+        return (
+          <HomePage
+            songs={songs}
+            dispatch={dispatch}
+            role={role}
+            setCurrentSong={setCurrentSong}
+            isPlaying={isPlaying}
+            onPlayPause={onPlayPause}
+            currentSong={currentSong}
+          />
+        );
     }
   };
 
@@ -156,8 +208,8 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
                   onClick={() => setActiveTab(item.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
                     activeTab === item.id
-                      ? 'bg-purple-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? "bg-purple-600 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
                   <Icon size={20} />
@@ -166,9 +218,9 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
               );
             })}
           </div>
-          {role === 'admin' && (
+          {role === "admin" && (
             <button
-              onClick={() => setActiveTab('add-song')}
+              onClick={() => setActiveTab("add-song")}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors mt-6 bg-gray-800 text-white hover:bg-gray-700"
             >
               <Plus size={20} />
@@ -209,8 +261,8 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
                   }}
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${
                     activeTab === item.id
-                      ? 'bg-purple-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? "bg-purple-600 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
                   <Icon size={20} />
@@ -218,10 +270,10 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
                 </button>
               );
             })}
-            {role === 'admin' && (
+            {role === "admin" && (
               <button
                 onClick={() => {
-                  setActiveTab('add-song');
+                  setActiveTab("add-song");
                   setMobileMenuOpen(false);
                 }}
                 className="flex items-center gap-3 px-4 py-2 rounded-lg text-left bg-gray-800 text-white hover:bg-gray-700"
@@ -235,9 +287,7 @@ const MusicLibrary = ({ songs, dispatch, role }) => {
       )}
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto p-6 md:p-8">
-        {renderContent()}
-      </div>
+      <div className="flex-1 overflow-auto p-6 md:p-8">{renderContent()}</div>
 
       {/* Bottom Player Bar */}
       <audio ref={audioRef} className="hidden" />
